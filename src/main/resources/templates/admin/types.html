@@ -15,7 +15,7 @@
   <div class="ui container">
     <div class="ui inverted secondary stackable menu">
       <h2 class="ui teal header item">Damao Li</h2>
-      <a href="#" class="active m-item item m-mobile-hide"><i class="home icon"></i>Blogs</a>
+      <a href="#" class=" m-item item m-mobile-hide"><i class="home icon"></i>Blogs</a>
       <a href="#" class="m-item item m-mobile-hide"><i class="idea icon"></i>Types</a>
       <a href="#" class="m-item item m-mobile-hide"><i class="tags icon"></i>Tags</a>
         <div class="right m-item m-mobile-hide menu">
@@ -50,7 +50,7 @@
 
 <div class="m-container-small m-padded-tb-big">
   <div class="ui container">
-    <form action="#" method = "post" class="ui segment form">
+<!--    <form action="#" method = "post" class="ui segment form">
       <div class="inline fields">
         <div class="field">
           <input type="text" name="title" placeholder="title">
@@ -76,8 +76,7 @@
             <button class="ui teal basic button"><i class="search icon"></i>search</button>
           </div>
       </div>
-    </form>
-
+    </form>-->
       <table class="ui celled table">
         <thead>
           <tr>
@@ -87,25 +86,25 @@
           </tr>
         </thead>
         <tbody>
-        <tr>
-          <td>1</td>
-          <td>How to hack someone's computer</td>
+        <tr th:each="type,iterStat : ${page.content}">
+          <td th:text="${iterStat.count}">1</td>
+          <td th:text="${type.name}">How to hack someone's computer</td>
           <td>
-            <a href="#" class="ui mini teal basic button m-margin-tb-tiny">edit</a>
-            <a href="#" class="ui mini red basic button m-margin-tb-tiny">delete</a>
+            <a href="#" th:href="@{/admin/types/{id}/input(id=${type.id})}" class="ui mini teal basic button m-margin-tb-tiny">edit</a>
+            <a href="#" th:href="@{/admin/types/{id}/delete(id=${type.id})}" class="ui mini red basic button m-margin-tb-tiny">delete</a>
           </td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
           <th colspan="6">
-            <div class="ui pagination menu">
-              <a class=" item">
+            <div class="ui pagination menu" th:if="${page.totalPages}>1">
+              <a th:href="@{/admin/types(page=${page.number}-1)}" th:unless="${page.first}" class=" item">
                 <i class="angle left icon"></i>previous</a>
-              <a class=" item">
+              <a th:href="@{/admin/types(page=${page.number}+1)}" th:unless="${page.last}" class=" item">
                 next<i class="angle right icon"></i></a>
             </div>
-            <a href="#" class="ui mini right floated teal basic button m-margin-top">add</a>
+            <a href="#" th:href="@{/admin/types/input}" class="ui mini right floated teal basic button m-margin-top">add</a>
           </th>
         </tr>
         </tfoot>
