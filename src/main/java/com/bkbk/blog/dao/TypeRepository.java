@@ -2,21 +2,15 @@ package com.bkbk.blog.dao;
 
 import com.bkbk.blog.po.Type;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface TypeRepository extends JpaRepository<Type,Long> {
+public interface TypeRepository extends JpaRepository<Type,Long>, CrudRepository<Type, Long> {
 
-    Type findByName(String name);
 
-    @Override
-    Optional<Type> findById(Long aLong);
+   Type findByName(String name);
 
-    @Override
-    void delete(Type type);
 
-    Optional<Type> save(Optional<Type> t);
-
-    void delete(Long id);
 
 }

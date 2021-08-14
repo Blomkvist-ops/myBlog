@@ -4,6 +4,7 @@ import com.bkbk.blog.NotFoundException;
 import com.bkbk.blog.dao.TypeRepository;
 import com.bkbk.blog.po.Type;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,8 @@ import java.util.Optional;
 @Service
 public class TypeServiceImpl implements TypeService {
 
-    private final TypeRepository typeRepository;
+    @Autowired
+    private TypeRepository typeRepository;
 
     public TypeServiceImpl(TypeRepository typeRepository) {
         this.typeRepository = typeRepository;
@@ -47,20 +49,19 @@ public class TypeServiceImpl implements TypeService {
 
     @Transactional
     @Override
-    public Optional<Type> updateType(Long id, Type type) {
-        Optional<Type> t = typeRepository.findById(id);
+    public Type updateType(Long id, Type type) {
+        Type t = typeRepository.getOne(id);
         if (t == null) {
             throw new NotFoundException("不存在该类型");
         }
-        BeanUtils.copyProperties(type,t);
-        return typeRepository.save(t);
+            BeanUtils.copyProperties(type,t);
+            return typeRepository.save(t);
+
     }
-
-
 
     @Transactional
     @Override
     public void deleteType(Long id) {
-        typeRepository.delete(id);
+        typeRepository.deleteById(id);
     }
 }
