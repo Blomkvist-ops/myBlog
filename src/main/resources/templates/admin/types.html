@@ -14,7 +14,7 @@
 <nav th:replace="admin/_fragments :: menu(2)" class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
   <div class="ui container">
     <div class="ui inverted secondary stackable menu">
-      <h2 class="ui teal header item">Damao Li</h2>
+      <h2 class="ui teal header item">Background management</h2>
       <a href="#" class=" m-item item m-mobile-hide"><i class="home icon"></i>Blogs</a>
       <a href="#" class="m-item item m-mobile-hide"><i class="idea icon"></i>Types</a>
       <a href="#" class="m-item item m-mobile-hide"><i class="tags icon"></i>Tags</a>
@@ -40,8 +40,8 @@
 <div class="ui attached pointing menu">
   <div class="ui container">
     <div class="right menu">
-      <a href="#" class="item">Post</a>
-      <a href="#" class="active teal item">List</a>
+      <a href="#" th:href="@{/admin/types/input}" class="item">Post</a>
+      <a href="#" th:href="@{/admin/types}" class="active teal item">List</a>
     </div>
   </div>
 </div>
@@ -50,6 +50,11 @@
 
 <div class="m-container-small m-padded-tb-big">
   <div class="ui container">
+    <div class="ui success message" th:unless="${#strings.isEmpty(message)}">
+      <i class="close icon"></i>
+      <div class="header">Hint: </div>
+      <p th:text="${message}">Congratulations, the operation is successful!</p>
+    </div>
 <!--    <form action="#" method = "post" class="ui segment form">
       <div class="inline fields">
         <div class="field">
@@ -174,6 +179,14 @@
     $('.ui.dropdown').dropdown({
       on: 'hover'
     });
+
+    //消息提示关闭初始化
+    $('.message .close')
+            .on('click', function () {
+              $(this)
+                      .closest('.message')
+                      .transition('fade');
+            });
 
   </script>
 </body>

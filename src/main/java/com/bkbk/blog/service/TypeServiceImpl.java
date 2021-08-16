@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class TypeServiceImpl implements TypeService {
 
@@ -31,8 +29,8 @@ public class TypeServiceImpl implements TypeService {
 
     @Transactional
     @Override
-    public Optional<Type> getType(Long id) {
-        return typeRepository.findById(id);
+    public Type getType(Long id) {
+        return typeRepository.getOne(id);
     }
 
     @Override
