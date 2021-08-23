@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="admin/_fragments :: head(~{::title})">
   <meta charset="UTF-8">
   <meta name = "viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog post</title>
@@ -12,7 +12,7 @@
 <body>
 
 <!--navigation-->
-<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+<nav th:replace="admin/_fragments :: menu(1)" class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
   <div class="ui container">
     <div class="ui inverted secondary stackable menu">
       <h2 class="ui teal header item">Damao Li</h2>
@@ -49,10 +49,10 @@
 
 <!--all content-->
 
-<div class="m-container-small m-padded-tb-big">
+<div class="m-container m-padded-tb-big">
   <div class="ui container">
-    <form action="#" method="post" class="ui form">
-
+    <form id="blog-form" action="#" th:object="${blog}" th:action="@{/admin/blogs}" method="post" class="ui form">
+      <input type="hidden" name="published" th:value="*{published}">
       <div class="required field">
         <div class="ui left labeled input">
           <div class="ui selection compact teal basic dropdown label">
@@ -65,38 +65,28 @@
               <div class="item" data-value="translation">translation</div>
             </div>
           </div>
-          <input type="text" name="title" placeholder="title">
+          <input type="text" name="title" placeholder="title" th:value="*{title}">
         </div>
       </div>
 
-      <div class="field">
+      <div class="required field">
         <div id="md-content" style="z-index: 1 !important;">
-            <textarea placeholder="blog content" name="content" style="display: none">
-              [TOC]
-
-#### Disabled options
-
-- TeX (Based on KaTeX);
-- Emoji;
-- Task lists;
-- HTML tags decode;
-- Flowchart and Sequence Diagram;
-            </textarea>
+            <textarea placeholder="blog content" name="content" style="display: none" th:text="*{content}"></textarea>
 
         </div>
       </div>
 
       <div class="two fields">
-        <div class="field">
+        <div class="required field">
           <div class="ui left labeled action input">
             <label class="ui compact teal basic label">Type</label>
             <div class="ui fluid selection dropdown">
-              <input type="hidden" name="type">
+              <input type="hidden" name="type.id" th:value="*{type}!=null ? *{type.id}">
               <i class="dropdown icon"></i>
               <div class="default text">Type</div>
               <div class="menu">
-                <div class="item" data-value="1">Error log</div>
-                <div class="item" data-value="2">Developer's manual</div>
+                <div th:each="type : ${types}" class="item" data-value="1" th:data-value="${type.id}" th:text="${type.name}">
+                  Error log</div>
               </div>
             </div>
           </div>
@@ -105,49 +95,56 @@
           <div class="ui left labeled action input">
             <label class="ui compact teal basic label">Tag</label>
             <div class="ui fluid selection multiple search dropdown">
-              <input type="hidden" name="tag">
+              <input type="hidden" name="tagIds" th:value="*{tagIds}">
               <i class="dropdown icon"></i>
               <div class="default text">Tag</div>
               <div class="menu">
-                <div class="item" data-value="1">java</div>
-                <div class="item" data-value="2">java script</div>
+                <div th:each="tag : ${tags}" class="item" data-value="1" th:data-value="${tag.id}" th:text="${tag.name}">java</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="field">
+      <div class="required field">
         <div class="ui left labeled input">
-          <label class="ui teal basic label">Image</label>
-          <input type="text" name="indexPicture" placeholder="Image address">
+          <label class="ui teal basic label">First Picture</label>
+          <input type="text" name="firstPicture" th:value="*{firstPicture}"
+                 placeholder="First picture address">
         </div>
 
+      </div>
+
+      <div class="required field">
+        <textarea name="description" th:text="*{description}"
+                  placeholder="Blog description..." maxlength="200"></textarea>
       </div>
 
       <div class="inline fields">
         <div class="field">
           <div class="ui checkbox">
-            <input type="checkbox" id="recommend" name="recommend" checked class="hidden">
+            <input type="checkbox" id="recommend" name="recommend" checked th:checked="*{recommend}"
+                   class="hidden">
             <label class="m-teal" for="recommend">recommend</label>
           </div>
         </div>
         <div class="field">
           <div class="ui checkbox">
-            <input type="checkbox" id="shareInfo" name="shareInfo" class="hidden">
-            <label class="m-teal" for="shareInfo">shareInfo</label>
+            <input type="checkbox" id="shareStatement" name="shareStatement" th:checked="*{shareStatement}"
+                   class="hidden">
+            <label class="m-teal" for="shareStatement">shareStatement</label>
           </div>
         </div>
         <div class="field">
           <div class="ui checkbox">
-            <input type="checkbox" id="appreciation" name="appreciation" class="hidden">
+            <input type="checkbox" id="appreciation" name="appreciation" th:checked="*{appreciation}" class="hidden">
             <label class="m-teal" for="appreciation">appreciation</label>
           </div>
         </div>
         <div class="field">
           <div class="ui checkbox">
-            <input type="checkbox" id="comment" name="comment" class="hidden">
-            <label class="m-teal" for="comment">comment</label>
+            <input type="checkbox" id="commentabled" name="commentabled" th:checked="*{commentabled}" class="hidden">
+            <label class="m-teal" for="commentabled">comment</label>
           </div>
         </div>
       </div>
@@ -158,10 +155,10 @@
         <button type="button" class="ui button" onclick="window.history.go(-1)">
           return
         </button>
-        <button class="ui secondary button">
+        <button type="button" id="save-btn" class="ui secondary button">
           save
         </button>
-        <button class="ui teal button">
+        <button type="button" id="publish-btn" class="ui teal button">
           submit
         </button>
       </div>
@@ -172,7 +169,7 @@
 
 
 <!--footer-->
-<footer class="ui inverted vertical segment m-padded-tb-massive">
+<footer th:replace="admin/_fragments :: footer" class="ui inverted vertical segment m-padded-tb-massive">
   <div class="ui center aligned container">
     <div class="ui inverted divided stackable grid">
       <div class="three wide column">
@@ -208,9 +205,11 @@
 </footer>
 
 
+<!--/*/<th:block th:replace="admin/_fragments :: script">/*/-->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
-<script src="../../static/lib/editormd/editormd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<!--/*/</th:block>/*/-->
+
 <script>
   //initialize Markdown editor
   var contentEditor;
@@ -219,7 +218,7 @@
       width   : "100%",
       height  : 640,
       syncScrolling : "single",
-      path    : "../static/lib/editormd/lib/"
+      path    : "/lib/editormd/lib/"
     });
   });
 
@@ -232,17 +231,53 @@
     on: 'hover'
   });
 
+
+  $('#save-btn').click(function () {
+    $('[name="published"]').val(false);
+    $('#blog-form').submit();
+  });
+
+
+  $('#publish-btn').click(function () {
+    $('[name="published"]').val(true);
+    $('#blog-form').submit();
+  });
+
+
+
   $('.ui.form').form({
     fields : {
       title : {
         identifier: 'title',
         rules: [{
           type : 'empty',
-          prompt: 'title : please enter a title'
+          prompt: 'Please enter title'
+        }]
+      },
+      content : {
+        identifier: 'content',
+        rules: [{
+          type : 'empty',
+          prompt: 'Please enter content'
+        }]
+      },
+      typeId : {
+        identifier: 'type.id',
+        rules: [{
+          type : 'empty',
+          prompt: 'Please enter type'
+        }]
+      },
+      firstPicture : {
+        identifier: 'firstPicture',
+        rules: [{
+          type : 'empty',
+          prompt: 'Please enter the address of the first picture'
         }]
       }
     }
   });
+
 
 </script>
 </body>

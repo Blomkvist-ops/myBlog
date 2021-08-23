@@ -50,19 +50,21 @@
 
 <div class="m-container-small m-padded-tb-big">
   <div class="ui container">
-    <form action="#" method = "post" class="ui segment form">
+    <div class="ui segment form">
       <div class="inline fields">
         <div class="field">
           <input type="text" name="title" placeholder="title">
         </div>
         <div class="field">
           <div class="ui selection dropdown">
-            <input type="hidden" name="type">
+            <input type="hidden" name="typeId">
             <i class="dropdown icon"></i>
             <div class="default text">Type</div>
             <div class="menu">
-              <div class="item" data-value="1">Error Log</div>
+              <div th:each="type : ${types}" class="item" data-value="1" th:data-value="${type.id}" th:text="${type.name}">Error Log</div>
+              <!--/*-->
               <div class="item" data-value="2">Development Guidelines</div>
+              <!--*/-->
             </div>
           </div>
         </div>
@@ -73,49 +75,51 @@
           </div>
         </div>
           <div class="field">
-            <button class="ui teal basic button"><i class="search icon"></i>search</button>
+            <button type="button" id="search-btn" class="ui teal basic button"><i class="search icon"></i>search</button>
           </div>
       </div>
-    </form>
+    </div>
+  <div id="table-container">
+    <table th:fragment="blogList" class="ui celled table">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Title</th>
+        <th>Type</th>
+        <th>Recommend</th>
+        <th>Update time</th>
+        <th>Operation</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="blog,iterStat : ${page.content}">
+        <td th:text="${iterStat.count}">1</td>
+        <td th:text="${blog.title}">How to hack someone's computer</td>
+        <td th:text="${blog.type.name}">computer science</td>
+        <td th:text="${blog.recommend} ? 'Yes':'No'">Yes</td>
+        <td th:text="${blog.updateTime}">2021-07-24 02:37</td>
+        <td>
+          <a href="#" th:href="@{/admin/blogs/{id}/input(id=${blog.id})}" class="ui mini teal basic button m-margin-tb-tiny">edit</a>
+          <a href="#" th:href="@{/admin/blogs/{id}/delete(id=${blog.id})}" class="ui mini red basic button m-margin-tb-tiny">delete</a>
+        </td>
+      </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+        <th colspan="6">
+          <div class="ui pagination menu" th:if="${page.totalPages}>1">
+            <a class=" item">
+              <i class="angle left icon"></i>previous</a>
+            <a onclick="page(this)" th:attr="data-page=${page.number}+1" class=" item" th:unless="${page.last}">
+              next<i class="angle right icon"></i></a>
+          </div>
+          <a href="#" th:href="@{/admin/blogs/input}" class="ui mini right floated teal basic button m-margin-top">add</a>
+        </th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
 
-      <table class="ui celled table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Recommend</th>
-            <th>Update time</th>
-            <th>Operation</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>1</td>
-          <td>How to hack someone's computer</td>
-          <td>computer science</td>
-          <td>Yes</td>
-          <td>2021-07-24 02:37</td>
-          <td>
-            <a href="#" class="ui mini teal basic button m-margin-tb-tiny">edit</a>
-            <a href="#" class="ui mini red basic button m-margin-tb-tiny">delete</a>
-          </td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr>
-          <th colspan="6">
-            <div class="ui pagination menu">
-              <a class=" item">
-                <i class="angle left icon"></i>previous</a>
-              <a class=" item">
-                next<i class="angle right icon"></i></a>
-            </div>
-            <a href="#" class="ui mini right floated teal basic button m-margin-top">add</a>
-          </th>
-        </tr>
-        </tfoot>
-      </table>
 
   </div>
 </div>
@@ -168,7 +172,7 @@
 </footer>
 
 
-  <!--/*/<th:block th:replace="_fragments :: script">/*/-->
+  <!--/*/<th:block th:replace="admin/_fragments :: script">/*/-->
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
   <!--/*/</th:block>/*/-->
@@ -181,6 +185,40 @@
     $('.ui.dropdown').dropdown({
       on: 'hover'
     });
+
+    //消息提示关闭初始化
+    $('.message .close')
+            .on('click', function () {
+              $(this)
+                      .closest('.message')
+                      .transition('fade');
+            });
+
+    $('#clear-btn')
+            .on('click', function() {
+              $('.ui.type.dropdown')
+                      .dropdown('clear')
+              ;
+            })
+    ;
+
+    function page(obj) {
+      $("[name='page']").val($(obj).data("page"));
+      loaddata();
+    }
+
+    $("#search-btn").click(function () {
+      $("[name='page']").val(0);
+      loaddata();
+    });
+    function loaddata() {
+      $("#table-container").load(/*[[@{/admin/blogs/search}]]*/"/admin/blogs/search",{
+        title : $("[name='title']").val(),
+        typeId : $("[name='typeId']").val(),
+        recommend : $("[name='recommend']").prop('checked'),
+        page : $("[name='page']").val()
+      });
+    }
 
   </script>
 </body>
