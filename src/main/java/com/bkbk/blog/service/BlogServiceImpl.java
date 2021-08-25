@@ -4,13 +4,14 @@ import com.bkbk.blog.NotFoundException;
 import com.bkbk.blog.dao.BlogRepository;
 import com.bkbk.blog.po.Blog;
 import com.bkbk.blog.po.Type;
-/*import com.bkbk.blog.util.MyBeanUtils;*/
-import com.bkbk.blog.vo.BlogQuery;
+import com.bkbk.blog.util.MyBeanUtils;
 import com.bkbk.blog.vo.BlogQuery;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,19 @@ public class BlogServiceImpl implements BlogService {
         },pageable);
     }
 
+    @Override
+    public Page<Blog> listBlog(Pageable pageable) {
+        return blogRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Blog> listRecommendBlogTop(Integer size) {
+        /*Sort sort = new Sort(Sort.Direction.DESC,"updateTime");*/
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC,
+                "updateTime"));
+        return blogRepository.findTop(pageable);
+    }
+
     @Transactional
     @Override
     public Blog saveBlog(Blog blog) {
@@ -76,9 +90,9 @@ public class BlogServiceImpl implements BlogService {
     public Blog updateBlog(Long id, Blog blog) {
         Blog b = blogRepository.getOne(id);
         if (b == null) {
-            throw new NotFoundException("The blog does not exist.");
+            throw new NotFoundException("The blog doesn't exist.");
         }
-        BeanUtils.copyProperties(blog,b/*, MyBeanUtils.getNullPropertyNames(blog)*/);
+        BeanUtils.copyProperties(blog,b, MyBeanUtils.getNullPropertyNames(blog));
         b.setUpdateTime(new Date());
         return blogRepository.save(b);
     }
