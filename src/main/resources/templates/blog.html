@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:replace="_fragments :: head(~{::title})">
     <meta charset="UTF-8">
     <meta name = "viewport" content="width=device-width, initial-scale=1.0">
@@ -46,30 +46,37 @@
             <div class="ui top attached segment">
                 <div class="ui horizontal link list">
                     <div class="item">
-                        <img src="https://picsum.photos/id/1/100/100" alt="" class="ui avatar image">
-                        <div class="content"><a hret="#" class="header">Damao Li</a></div>
+                        <img src="https://picsum.photos/id/1/100/100" th:src="@{${blog.user.avatar}}" alt="" class="ui avatar image">
+                        <div class="content"><a hret="#" th:text="${blog.user.nickname}" class="header">Damao Li</a></div>
                     </div>
                     <div class="item">
-                        <i class="calendar icon"></i> 2021-07-08
+                        <i class="calendar icon"></i>
+                        <span th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd')}">2021-07-08</span>
+
                     </div>
                     <div class="item">
-                        <i class="eye icon "></i> 3242
+                        <i class="eye icon "></i>
+                        <span th:text="${blog.views}">3242</span>
                     </div>
                 </div>
             </div>
             <div class="ui attached segment">
             <!--image area-->
-                <img src="https://picsum.photos/id/1/800/450" alt="" class="ui fluid rounded image">
+                <img src="https://picsum.photos/id/1/800/450" th:src="@{${blog.firstPicture}}" alt="" class="ui fluid rounded image">
             </div>
 
             <div class="ui js-toc-content attached padded segment">
                 <!--内容-->
                 <div class="ui right aligned basic segment">
-                    <div class="ui orange basic label">
+                    <div class="ui orange basic label"  th:text="${blog.flag}">
                         original
                     </div>
                 </div>
-                <div id="content" class="typo typo-selection m-padded-lr-responsive m-padded-tb-large">
+
+                <h2 class="ui center aligned header" th:text="${blog.title}">关于刻意练习的清单</h2>
+                <br>
+                <!--中间主要内容部分-->
+                <div id="content" class="typo typo-selection m-padded-lr-responsive m-padded-tb-large" th:utext="${blog.content}">
                     <h2 id="section1">一、关于 <i class="serif">Typo.css</i></h2>
                     <p><i class="serif">Typo.css</i> 的目的是，在一致化浏览器排版效果的同时，构建最适合中文阅读的网页排版。</p>
                     <h4>现状和如何去做：</h4>
@@ -426,7 +433,7 @@ h5,h6{font-size:1em;}
                 </div>
                 <!--tag-->
                 <div class="m-padded-lr-responsive">
-                    <div class="ui basic teal left pointing label">method</div>
+                    <div class="ui basic teal left pointing label" th:each="tag : ${blog.tags}" th:text="${tag.name}">method</div>
                 </div>
                 <!--donate-->
                 <div class="ui center aligned basic segment">
@@ -436,12 +443,12 @@ h5,h6{font-size:1em;}
                     <div class="ui orange basic label">
                         <div class="ui images" style="font-size: inherit !important;">
                             <div class="image">
-                                <img src="../static/images/qqerweima.png" alt="" class="ui rounded bordered image"
+                                <img src="../static/images/qqerweima.png" th:src="@{/images/qqerweima.png}" alt="" class="ui rounded bordered image"
                                      style="width: 120px">
                                 <div>alipay</div>
                             </div>
                             <div class="image">
-                                <img src="../static/images/qqerweima.png" alt="" class="ui rounded bordered image"
+                                <img src="../static/images/qqerweima.png" th:src="@{/images/qqerweima.png}" alt="" class="ui rounded bordered image"
                                      style="width: 120px">
                                 <div>wechat</div>
                             </div>
@@ -456,78 +463,71 @@ h5,h6{font-size:1em;}
                 <div class="ui middle aligned grid">
                     <div class="eleven wide column">
                         <ui class="list"></ui>
-                        <li>Author: Damao Li</li>
-                        <li>Publishing Time: 2021-7-18</li>
-                        <li>Author: Damao Li</li>
-                        <li>Publishing Time: 2021-7-18</li>
+                        <li>Author: <span th:text="${blog.user.nickname}">Damao Li</span><a href="#" th:href="@{/about}" target="_blank">(Contact the author)</a></li>
+                        <li>Publishing Time:<span th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd HH:mm')}">2021-7-18 09:08</span></li>
+                        <li>Copyright</li>
+                        <li>Reprint requires application</li>
                     </div>
                     <div class="five wide column">
-                        <img src="../static/images/qqerweima.png" alt="" class="ui right floated rounded bordered image" style="width: 110px">
+                        <img src="../static/images/qqerweima.png" th:src="@{/images/qqerweima.png}" alt="" class="ui right floated rounded bordered image" style="width: 110px">
 
                     </div>
                 </div>
 
             </div>
-            <div id="comment-container" class="ui bottom attached segment">
-
-                <div class="ui teal segment">
-                    <!--留言区域列表-->
-                    <div class="ui form">
-                        <div class="ui comments">
+            <div  class="ui bottom attached segment">
+                <!--留言区域列表-->
+                <div id="comment-container" class="ui teal segment">
+                    <div th:fragment="commentList">
+                        <div class="ui threaded comments">
                             <h3 class="ui dividing header">Comments</h3>
                             <div class="comment">
                                 <a class="avatar">
                                     <img src="https://picsum.photos/id/1/100/100">
                                 </a>
                                 <div class="content">
-                                    <a class="author">Matt</a>
+                                    <a class="author">
+                                        <span th:text="${comment.nickname}">Matt</span>
+                                        <div class="ui mini basic teal left pointing label m-padded-mini" th:if="${comment.adminComment}">Blogger</div>
+                                    </a>
                                     <div class="metadata">
-                                        <span class="date">Today at 5:42PM</span>
+                                        <span class="date" th:text="${#dates.format(comment.createTime,'yyyy-MM-dd HH:mm')}">Today at 5:42PM</span>
                                     </div>
-                                    <div class="text">
+                                    <div class="text" th:text="${comment.content}">
                                         How artistic!
                                     </div>
                                     <div class="actions">
-                                        <a class="reply">Reply</a>
+                                        <a class="reply" data-commentid="1" data-commentnickname="Matt" th:attr="data-commentid=${comment.id},
+                    data-commentnickname=${comment.nickname}" onclick="reply(this)">Reply</a>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="comment">
+                                <div class="comments" th:if="${#arrays.length(comment.replyComments)}>0">
+                            <div class="comment" th:each="reply : ${comment.replyComments}">
                                 <a class="avatar">
-                                    <img src="https://picsum.photos/id/1/100/100">
+                                    <img src="https://picsum.photos/id/1/100/100" th:src="@{${reply.avatar}}">
                                 </a>
                                 <div class="content">
-                                    <a class="author">Elliot Fu</a>
+                                    <a class="author">
+                                        <span th:text="${reply.nickname}">Elliot Fu</span>
+                                        <div class="ui mini basic teal left pointing label m-padded-mini" th:if="${reply.adminComment}">Blogger</div>
+                                        &nbsp;<span th:text="|@ ${reply.parentComment.nickname}|" class="m-teal">@ 小白</span>
+                                    </a>
+
                                     <div class="metadata">
-                                        <span class="date">Yesterday at 12:30AM</span>
+                                        <span class="date" th:text="${#dates.format(reply.createTime,'yyyy-MM-dd HH:mm')}">Yesterday at 12:30AM</span>
                                     </div>
-                                    <div class="text">
-                                        <p>This has been very useful for my research. Thanks as well!</p>
+
+                                    <div class="text" th:text="${reply.content}">
+                                        How artistic!
                                     </div>
                                     <div class="actions">
-                                        <a class="reply">Reply</a>
-                                    </div>
-                                </div>
-                                <div class="comments">
-                                    <div class="comment">
-                                        <a class="avatar">
-                                            <img src="https://picsum.photos/id/1/100/100">
-                                        </a>
-                                        <div class="content">
-                                            <a class="author">Jenny Hess</a>
-                                            <div class="metadata">
-                                                <span class="date">Just now</span>
-                                            </div>
-                                            <div class="text">
-                                                Elliot you are always so right :)
-                                            </div>
-                                            <div class="actions">
-                                                <a class="reply">Reply</a>
-                                            </div>
-                                        </div>
+                                        <a class="reply" data-commentid="1" data-commentnickname="Matt" th:attr="data-commentid=${reply.id},data-commentnickname=${reply.nickname}" onclick="reply(this)">Reply</a>
                                     </div>
                                 </div>
                             </div>
+                                </div>
+                            </div>
+                            <!--/*-->
                             <div class="comment">
                                 <a class="avatar">
                                     <img src="https://picsum.photos/id/1/100/100">
@@ -545,36 +545,40 @@ h5,h6{font-size:1em;}
                                     </div>
                                 </div>
                             </div>
-                            <form class="ui reply form">
-                                <div class="field">
-                                    <textarea name="content" placeholder="enter your comment here..."></textarea>
-                                </div>
-                                <div class="fields ">
-                                    <div class="field m-mobile-wide m-margin-bottom-small">
-                                        <div class="ui left icon input">
-                                            <i class="user icon"></i>
-                                            <input type="text" name="nickname" placeholder="name">
-                                        </div>
+                            <!--/*-->
 
-                                    </div>
-                                    <div class="field m-mobile-wide m-margin-bottom-small">
-                                        <div class="ui left icon input">
-                                            <i class="mail icon"></i>
-                                            <input type="text" name="email" placeholder="email">
-                                        </div>
-
-                                    </div>
-                                    <div class="field m-mobile-wide m-margin-bottom-small">
-                                        <button class="ui teal button m-mobile-wide">
-                                            <i class="icon edit"></i> Add Reply
-                                        </button>
-                                    </div>
-
-                                </div>
-
-                            </form>
                         </div>
                     </div>
+                </div>
+
+                <div d="comment-form" class="ui form">
+                    <input type="hidden" name="blog.id" th:value="${blog.id}">
+                    <input type="hidden" name="parentComment.id" value="-1">
+                        <div class="field">
+                            <textarea name="content" placeholder="enter your comment here..."></textarea>
+                        </div>
+                        <div class="fields ">
+                            <div class="field m-mobile-wide m-margin-bottom-small">
+                                <div class="ui left icon input">
+                                    <i class="user icon"></i>
+                                    <input type="text" name="nickname" placeholder="name">
+                                </div>
+
+                            </div>
+                            <div class="field m-mobile-wide m-margin-bottom-small">
+                                <div class="ui left icon input">
+                                    <i class="mail icon"></i>
+                                    <input type="text" name="email" placeholder="email">
+                                </div>
+
+                            </div>
+                            <div class="field m-mobile-wide m-margin-bottom-small">
+                                <button id="commentpost-btn" type="button" class="ui teal button m-mobile-wide">
+                                    <i class="icon edit"></i> Add Reply
+                                </button>
+                            </div>
+
+                        </div>
                 </div>
             </div>
         </div>
@@ -650,7 +654,7 @@ h5,h6{font-size:1em;}
 <script src="../static/lib/waypoints/jquery.waypoints.min.js"></script>
     <!--/*/</th:block>/*/-->
 
-    <script>
+    <script th:inline="javascript">
         $('.menu.toggle').click(function () {
             $('.m-item').toggleClass('m-mobile-show');
 
@@ -682,8 +686,10 @@ h5,h6{font-size:1em;}
             position : 'left center'
         });
 
+        var serurl = "127.0.0.1:8080";
+        var url = /*[[@{/blog/{id}(id=${blog.id})}]]*/"";
         var qrcode = new QRCode("qrcode", {
-            text: "http://jindo.dev.naver.com/collie",
+            text: serurl+url,
             width: 110,
             height: 110,
             colorDark : "#000000",
@@ -706,6 +712,64 @@ h5,h6{font-size:1em;}
                 console.log('Scrolled to waypoint!  ' + direction);
             }
         })
+
+        //评论表单验证
+        $('.ui.form').form({
+            fields: {
+                title: {
+                    identifier: 'content',
+                    rules: [{
+                        type: 'empty',
+                        prompt: 'Please enter your comment'
+                    }
+                    ]
+                },
+                content: {
+                    identifier: 'nickname',
+                    rules: [{
+                        type: 'empty',
+                        prompt: 'Please enter your name'
+                    }]
+                },
+                type: {
+                    identifier: 'email',
+                    rules: [{
+                        type: 'email',
+                        prompt: 'Please enter correct email address'
+                    }]
+                }
+            }
+        });
+
+        $('#commentpost-btn').click(function () {
+            var boo = $('.ui.form').form('validate form');
+            if (boo) {
+                console.log('Verification successful');
+                postData();
+            } else {
+                console.log('Verification failed');
+            }
+
+        });
+
+        function postData() {
+            $("#comment-container").load(/*[[@{/comments}]]*/"",{
+                "parentComment.id" : $("[name='parentComment.id']").val(),
+                "blog.id" : $("[name='blog.id']").val(),
+                "nickname": $("[name='nickname']").val(),
+                "email"   : $("[name='email']").val(),
+                "content" : $("[name='content']").val()
+            },function (responseTxt, statusTxt, xhr) {
+//        $(window).scrollTo($('#comment-container'),500);
+                clearContent();
+            });
+        }
+
+        function clearContent() {
+            $("[name='content']").val('');
+            $("[name='parentComment.id']").val(-1);
+            $("[name='content']").attr("placeholder", "enter your comment here...");
+        }
 
     </script>
 </body>
