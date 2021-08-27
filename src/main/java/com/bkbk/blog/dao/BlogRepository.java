@@ -1,6 +1,7 @@
 package com.bkbk.blog.dao;
 
 import com.bkbk.blog.po.Blog;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -13,4 +14,9 @@ public interface BlogRepository extends JpaRepository<Blog, Long>, JpaSpecificat
 
     @Query("select b from Blog b where b.recommend = true")
     List<Blog> findTop(Pageable pageable);
+
+
+    // select * from t_blog where title like "%内容%"
+    @Query("select b from Blog b where upper(b.title) like upper(?1) or b.content like upper(?1)")
+    Page<Blog> findByQuery(String query,Pageable pageable);
 }
