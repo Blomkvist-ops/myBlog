@@ -479,11 +479,11 @@ h5,h6{font-size:1em;}
                 <!--留言区域列表-->
                 <div id="comment-container" class="ui teal segment">
                     <div th:fragment="commentList">
-                        <div class="ui threaded comments">
+                        <div class="ui threaded comments" style="max-width: 100%;">
                             <h3 class="ui dividing header">Comments</h3>
-                            <div class="comment">
+                            <div class="comment" th:each="comment : ${comments}">
                                 <a class="avatar">
-                                    <img src="https://picsum.photos/id/1/100/100">
+                                    <img src="https://picsum.photos/id/1/100/100" th:src="@{${comment.avatar}}">
                                 </a>
                                 <div class="content">
                                     <a class="author">
@@ -545,7 +545,7 @@ h5,h6{font-size:1em;}
                                     </div>
                                 </div>
                             </div>
-                            <!--/*-->
+                            <!--*/-->
 
                         </div>
                     </div>
@@ -561,14 +561,14 @@ h5,h6{font-size:1em;}
                             <div class="field m-mobile-wide m-margin-bottom-small">
                                 <div class="ui left icon input">
                                     <i class="user icon"></i>
-                                    <input type="text" name="nickname" placeholder="name">
+                                    <input type="text" name="nickname" placeholder="name" th:value="${session.user}!=null ? ${session.user.nickname}">
                                 </div>
 
                             </div>
                             <div class="field m-mobile-wide m-margin-bottom-small">
                                 <div class="ui left icon input">
                                     <i class="mail icon"></i>
-                                    <input type="text" name="email" placeholder="email">
+                                    <input type="text" name="email" placeholder="email" th:value="${session.user}!=null ? ${session.user.email}">
                                 </div>
 
                             </div>
@@ -752,6 +752,10 @@ h5,h6{font-size:1em;}
 
         });
 
+        $(function () {
+            $("#comment-container").load(/*[[@{/comments/{id}(id=${blog.id})}]]*/"comments/6");
+        });
+
         function postData() {
             $("#comment-container").load(/*[[@{/comments}]]*/"",{
                 "parentComment.id" : $("[name='parentComment.id']").val(),
@@ -760,7 +764,7 @@ h5,h6{font-size:1em;}
                 "email"   : $("[name='email']").val(),
                 "content" : $("[name='content']").val()
             },function (responseTxt, statusTxt, xhr) {
-//        $(window).scrollTo($('#comment-container'),500);
+//            $(window).scrollTo($('#comment-container'),500);
                 clearContent();
             });
         }
@@ -770,6 +774,15 @@ h5,h6{font-size:1em;}
             $("[name='parentComment.id']").val(-1);
             $("[name='content']").attr("placeholder", "enter your comment here...");
         }
+
+        function reply(obj) {
+            var commentId = $(obj).data('commentid');
+            var commentNickname = $(obj).data('commentnickname');
+            $("[name='content']").attr("placeholder", "@"+commentNickname).focus();
+            $("[name='parentComment.id']").val(commentId);
+            $(window).scrollTo($('#comment-form'),500);
+        }
+
 
     </script>
 </body>
