@@ -436,29 +436,32 @@ h5,h6{font-size:1em;}
                     <div class="ui basic teal left pointing label" th:each="tag : ${blog.tags}" th:text="${tag.name}">method</div>
                 </div>
                 <!--donate-->
-                <div class="ui center aligned basic segment">
-                    <button id="payButton" class="ui orange basic circular button">donate</button>
-                </div>
-                <div class="ui payQR flowing popup transition hidden">
-                    <div class="ui orange basic label">
-                        <div class="ui images" style="font-size: inherit !important;">
-                            <div class="image">
-                                <img src="../static/images/qqerweima.png" th:src="@{/images/qqerweima.png}" alt="" class="ui rounded bordered image"
-                                     style="width: 120px">
-                                <div>alipay</div>
+                <div th:if="${blog.appreciation}">
+                    <div class="ui center aligned basic segment">
+                        <button id="payButton" class="ui orange basic circular button">donate</button>
+                    </div>
+                    <div class="ui payQR flowing popup transition hidden">
+                        <div class="ui orange basic label">
+                            <div class="ui images" style="font-size: inherit !important;">
+                                <div class="image">
+                                    <img src="../static/images/qqerweima.png" th:src="@{/images/qqerweima.png}" alt="" class="ui rounded bordered image"
+                                         style="width: 120px">
+                                    <div>alipay</div>
+                                </div>
+                                <div class="image">
+                                    <img src="../static/images/qqerweima.png" th:src="@{/images/qqerweima.png}" alt="" class="ui rounded bordered image"
+                                         style="width: 120px">
+                                    <div>wechat</div>
+                                </div>
                             </div>
-                            <div class="image">
-                                <img src="../static/images/qqerweima.png" th:src="@{/images/qqerweima.png}" alt="" class="ui rounded bordered image"
-                                     style="width: 120px">
-                                <div>wechat</div>
-                            </div>
-                </div>
+                        </div>
                     </div>
                 </div>
 
 
+
             </div>
-            <div class="ui attached positive message">
+            <div class="ui attached positive message" th:if="${blog.shareStatement}">
                 <!--博客信息-->
                 <div class="ui middle aligned grid">
                     <div class="eleven wide column">
@@ -475,7 +478,7 @@ h5,h6{font-size:1em;}
                 </div>
 
             </div>
-            <div  class="ui bottom attached segment">
+            <div  class="ui bottom attached segment" th:if="${blog.commentabled}">
                 <!--留言区域列表-->
                 <div id="comment-container" class="ui teal segment">
                     <div th:fragment="commentList">
